@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { Eye, EyeOff } from 'lucide-react'; // Importing icons
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -40,50 +41,50 @@ const LoginPage = () => {
             required
           />
 
-          <div>
+          <div className="password-container">
             <input
-              type={showPassword ? 'text' : 'password'}
+              type={showPassword ? 'text' : 'password'} // Correcting the type based on state
               placeholder="Senha"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
             />
+            <button
+              type="button"
+              className="eye-icon"
+              onClick={() => setShowPassword((prev) => !prev)} // Toggling password visibility
+            >
+              {showPassword ? (
+                <EyeOff color="black" size={20} />
+              ) : (
+                <Eye color="black" size={20} />
+              )}
+            </button>
           </div>
-          <div style={{ height: '8px' }}></div> {}
-          <div className="input-container">
-            <label className="show-password">
-              <input
-                type="checkbox"
-                checked={showPassword}
-                onChange={() => setShowPassword(!showPassword)}
-              />
-              <span>Mostrar Senha</span>
-            </label>
-          </div>
-          <div style={{ height: '16px' }}></div> {}
+
           <button type="submit">Entrar</button>
         </form>
       </div>
 
-      {}
       <style jsx>{`
         .page-container {
           display: flex;
           justify-content: center;
           align-items: center;
           height: 100vh;
-          background-color: #0070f3; 
+          background: linear-gradient(135deg, #aacfff, #4a90e2);
         }
+
         .login-container {
           max-width: 400px;
-          margin: 100px auto;
           padding: 20px;
           text-align: center;
           border: 1px solid #eaeaea;
           border-radius: 8px;
           box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
-          background-color: #fff; 
+          background-color: #fff;
         }
+
         input {
           width: 100%;
           padding: 12px 20px;
@@ -93,32 +94,57 @@ const LoginPage = () => {
           border: 1px solid #ccc;
           border-radius: 6px;
         }
-        .input-container {
+
+        .password-container {
+          position: relative;
           display: flex;
           align-items: center;
-          justify-content: flex-start; /* Adicionado para alinhar à esquerda */
-          gap: 10px;
         }
-        .show-password {
-          display: flex;
-          align-items: center;
-          font-size: 14px;
+
+        .password-container input {
+          width: 100%;
+          padding-right: 40px; /* Space for the eye icon */
+        }
+
+        .eye-icon {
+          position: absolute;
+          right: 10px;
+          background: transparent;
+          border: none;
           cursor: pointer;
-          gap: 4px;
+          padding: 5px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 30px;  /* Set width */
+          height: 30px; /* Set height */
         }
+
+        .eye-icon:hover {
+          background: none; /* Prevent background change */
+        }
+
+        .eye-icon svg {
+          color: black !important; /* Set a visible color */
+          width: 20px;
+          height: 20px;
+        }
+
         button {
           width: 100%;
           padding: 12px;
-          background-color: #0070f3;
+          background: linear-gradient(135deg, #0070f3, #005bb5);
           color: white;
           border: none;
           border-radius: 6px;
           font-size: 16px;
           cursor: pointer;
-          transition: background-color 0.3s ease;
+          transition: background 0.3s ease-in-out, transform 0.2s ease;
         }
+
         button:hover {
-          background-color: #005bb5;
+          background: linear-gradient(135deg, #003d99, #002766);
+          transform: scale(1.05);
         }
       `}</style>
     </div>
