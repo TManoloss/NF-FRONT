@@ -72,7 +72,7 @@ const LoginPage = () => {
           justify-content: center;
           align-items: center;
           height: 100vh;
-          background: linear-gradient(135deg, #aacfff, #4a90e2);
+          background: #f0f0f0;
         }
 
         .login-container {
