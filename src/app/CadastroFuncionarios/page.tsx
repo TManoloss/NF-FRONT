@@ -6,6 +6,7 @@ const CadastroPage = () => {
   const [formData, setFormData] = useState({
     nome: '',
     email: '',
+    senha: '',
     endereco: '',
     telefone: '',
     cpf: ''
@@ -28,6 +29,9 @@ const CadastroPage = () => {
           <div className="input-group">
             <input type="text" name="nome" placeholder="Nome" value={formData.nome} onChange={handleChange} required />
             <input type="email" name="email" placeholder="Email" value={formData.email} onChange={handleChange} required />
+          </div>
+          <div className="input-group">
+            <input type="text" name="senha" placeholder="Senha" value={formData.senha} onChange={handleChange} required />
           </div>
           <div className="input-group">
             <input type="text" name="endereco" placeholder="Endereço" value={formData.endereco} onChange={handleChange} required />

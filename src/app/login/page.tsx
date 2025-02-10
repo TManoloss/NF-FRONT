@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Eye, EyeOff } from 'lucide-react'; // Importing icons
+import { Eye, EyeOff } from 'lucide-react'; 
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -43,7 +43,7 @@ const LoginPage = () => {
 
           <div className="password-container">
             <input
-              type={showPassword ? 'text' : 'password'} // Correcting the type based on state
+              type={showPassword ? 'text' : 'password'} 
               placeholder="Senha"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -52,7 +52,7 @@ const LoginPage = () => {
             <button
               type="button"
               className="eye-icon"
-              onClick={() => setShowPassword((prev) => !prev)} // Toggling password visibility
+              onClick={() => setShowPassword((prev) => !prev)} 
             >
               {showPassword ? (
                 <EyeOff color="black" size={20} />
