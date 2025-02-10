@@ -2,29 +2,31 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Eye, EyeOff } from 'lucide-react'; 
+import { Eye, EyeOff } from 'lucide-react'; // Importando os ícones
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [senha, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    const res = await fetch('/api/login', {
+  
+    const res = await fetch('http://localhost:5000/auth/login', { // 🔥 Agora chamando o backend correto
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify({ email, senha }),
     });
-
+  
+    const data = await res.json();
+  
     if (res.ok) {
       router.push('/dashboard');
     } else {
-      alert('Credenciais inválidas. Por favor, tente novamente!');
+      alert(data.message || 'Credenciais inválidas!');
     }
   };
 
@@ -43,16 +45,16 @@ const LoginPage = () => {
 
           <div className="password-container">
             <input
-              type={showPassword ? 'text' : 'password'} 
+              type={showPassword ? 'text' : 'password'} // Corrige o tipo baseado no estado
               placeholder="Senha"
-              value={password}
+              value={senha}
               onChange={(e) => setPassword(e.target.value)}
               required
             />
             <button
               type="button"
               className="eye-icon"
-              onClick={() => setShowPassword((prev) => !prev)} 
+              onClick={() => setShowPassword((prev) => !prev)} // Alterna a visibilidade da senha
             >
               {showPassword ? (
                 <EyeOff color="black" size={20} />
@@ -72,7 +74,7 @@ const LoginPage = () => {
           justify-content: center;
           align-items: center;
           height: 100vh;
-          background: #f0f0f0;
+          background: linear-gradient(135deg, #aacfff, #4a90e2);
         }
 
         .login-container {
@@ -103,7 +105,7 @@ const LoginPage = () => {
 
         .password-container input {
           width: 100%;
-          padding-right: 40px; /* Space for the eye icon */
+          padding-right: 40px; /* Espaço para o ícone de olho */
         }
 
         .eye-icon {
@@ -116,19 +118,18 @@ const LoginPage = () => {
           display: flex;
           align-items: center;
           justify-content: center;
-          width: 30px;  /* Set width */
-          height: 30px; /* Set height */
+          width: 30px;  /* Define a largura */
+          height: 30px; /* Define a altura */
         }
 
         .eye-icon:hover {
-          background: none; /* Prevent background change */
+          background: none; /* Impede a mudança de fundo */
         }
 
         .eye-icon svg {
-          color: black !important; /* Set a visible color */
+          color: black !important; /* Define uma cor visível */
           width: 20px;
           height: 20px;
-        }
 
         button {
           width: 100%;

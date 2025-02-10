@@ -19,6 +19,25 @@ const CadastroPage = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log('Dados enviados:', formData);
+    
+    try {
+        const response = await fetch('http://localhost:5000/api/funcionarios', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formData),
+        });
+
+        if (!response.ok) {
+            throw new Error('Erro ao cadastrar funcionário');
+        }
+
+        const data = await response.json();
+        console.log('Funcionário cadastrado com sucesso:', data);
+    } catch (error) {
+        console.error('Erro:', error);
+    }
   };
 
   return (
