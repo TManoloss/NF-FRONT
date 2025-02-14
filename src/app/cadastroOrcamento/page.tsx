@@ -9,7 +9,7 @@ const OrcamentoPage = () => {
   const [cliente, setCliente] = useState<any>(null);
   const [endereco, setEndereco] = useState('');
   const [clientesPedidos, setClientesPedidos] = useState<{
-    [key: string]: { descricao: string; servico: string; quantidade: number; data_vencimento: string; produto_id: string; endereco: string; imagem?: string }[]; 
+    [key: string]: { descricao: string; servico: string; quantidade: number; data_vencimento: string; produto_id: string; endereco: string; imagem?: string }[];
   }>({});
   const [modalOpen, setModalOpen] = useState(false);
   const [novoPedido, setNovoPedido] = useState({
@@ -22,7 +22,7 @@ const OrcamentoPage = () => {
     imagem: null as string | null,
   });
 
-  const [imagePreview, setImagePreview] = useState<string | null>(null); // To display the image preview
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   const clientes = [
     { value: 'sophia', label: 'Sophia' },
@@ -42,11 +42,10 @@ const OrcamentoPage = () => {
     setModalOpen(false);
     setNovoPedido({ descricao: '', servico: '', quantidade: 0, data_vencimento: '', produto_id: '', endereco: '', imagem: null });
     setEndereco('');
-    setImagePreview(null); // Reset the image preview
+    setImagePreview(null);
   };
 
   const handleSalvarEndereco = () => {
-    // Set the address in the new order
     setNovoPedido({ ...novoPedido, endereco });
     console.log('Endereço salvo:', endereco);
   };
@@ -69,7 +68,7 @@ const OrcamentoPage = () => {
       const reader = new FileReader();
       reader.onloadend = () => {
         setNovoPedido({ ...novoPedido, imagem: reader.result as string });
-        setImagePreview(reader.result as string); // Set the image preview
+        setImagePreview(reader.result as string);
       };
       reader.readAsDataURL(file);
     }
@@ -129,14 +128,12 @@ const OrcamentoPage = () => {
         </div>
       </div>
 
-      {/* Modal */}
       <Modal show={modalOpen} onHide={() => setModalOpen(false)}>
         <Modal.Header closeButton>
           <Modal.Title>Novo Pedido</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <div className="mb-3 d-flex align-items-center">
-            {/* Cloud Icon Upload Button */}
             <Button variant="light" className="me-3" onClick={() => document.getElementById('upload-input')?.click()}>
               <FaCloudUploadAlt size={24} />
             </Button>
@@ -210,7 +207,6 @@ const OrcamentoPage = () => {
         </Modal.Footer>
       </Modal>
 
-      {/* "Adicionar Pedido" Button at the Bottom Right */}
       <div style={{ position: 'fixed', bottom: '20px', right: '20px' }}>
         <Button variant="primary" onClick={() => setModalOpen(true)}>
           + Adicionar Pedido
