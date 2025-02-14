@@ -1,18 +1,18 @@
 'use client';
 
 import { useState } from 'react';
-import { Button, InputGroup, FormControl, Modal } from 'react-bootstrap';
+import { Button, InputGroup, FormControl, Modal, Alert } from 'react-bootstrap';
 import Select from 'react-select';
 import { FaTrash, FaCloudUploadAlt } from 'react-icons/fa';
 
 const OrcamentoPage = () => {
   const [cliente, setCliente] = useState<any>(null);
   const [endereco, setEndereco] = useState('');
-  const [clientesPedidos, setClientesPedidos] = useState<{
-    [key: string]: { descricao: string; servico: string; quantidade: number; data_vencimento: string; produto_id: string; endereco: string; imagem?: string }[];
+  const [clientesProdutos, setClientesProdutos] = useState<{
+    [key: string]: { descricao: string; servico: string; quantidade: number; data_vencimento: string; produto_id: string; endereco: string; imagem?: string }[]; 
   }>({});
   const [modalOpen, setModalOpen] = useState(false);
-  const [novoPedido, setNovoPedido] = useState({
+  const [novoProduto, setNovoProduto] = useState({
     descricao: '',
     servico: '',
     quantidade: 0,
@@ -21,8 +21,8 @@ const OrcamentoPage = () => {
     endereco: '',
     imagem: null as string | null,
   });
-
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null); 
 
   const clientes = [
     { value: 'sophia', label: 'Sophia' },
@@ -30,44 +30,51 @@ const OrcamentoPage = () => {
     { value: 'joao', label: 'João' },
   ];
 
-  const handleSalvarPedido = () => {
+  const handleSalvarProduto = () => {
+    if (!novoProduto.descricao || !novoProduto.servico || !novoProduto.quantidade || !novoProduto.data_vencimento || !novoProduto.endereco) {
+      setError('Por favor, preencha todos os campos obrigatórios.');
+      return;
+    }
+
+    setError(null); 
+
     if (cliente) {
-      const clientePedidos = clientesPedidos[cliente.value] || [];
-      const updatedPedidos = [...clientePedidos, { ...novoPedido, endereco }];
-      setClientesPedidos({
-        ...clientesPedidos,
-        [cliente.value]: updatedPedidos,
+      const clienteProduto = clientesProdutos[cliente.value] || [];
+      const updatedProdutos = [...clienteProduto, { ...novoProduto, endereco }];
+      setClientesProdutos({
+        ...clientesProdutos,
+        [cliente.value]: updatedProdutos,
       });
     }
     setModalOpen(false);
-    setNovoPedido({ descricao: '', servico: '', quantidade: 0, data_vencimento: '', produto_id: '', endereco: '', imagem: null });
+    setNovoProduto({ descricao: '', servico: '', quantidade: 0, data_vencimento: '', produto_id: '', endereco: '', imagem: null });
     setEndereco('');
     setImagePreview(null);
   };
 
   const handleSalvarEndereco = () => {
-    setNovoPedido({ ...novoPedido, endereco });
+    setNovoProduto({ ...novoProduto, endereco });
     console.log('Endereço salvo:', endereco);
   };
 
-  const handleDeletePedido = (index: number) => {
+  const handleDeleteProduto = (index: number) => {
     if (cliente) {
-      const updatedPedidos = clientesPedidos[cliente.value].filter((_, i) => i !== index);
-      setClientesPedidos({
-        ...clientesPedidos,
-        [cliente.value]: updatedPedidos,
+      const updatedProdutos = clientesProdutos[cliente.value].filter((_, i) => i !== index);
+      setClientesProdutos({
+        ...clientesProdutos,
+        [cliente.value]: updatedProdutos,
       });
     }
   };
 
-  const pedidos = cliente ? clientesPedidos[cliente.value] || [] : [];
+  const produtos = cliente ? clientesProdutos[cliente.value] || [] : [];
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files ? e.target.files[0] : null;
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setNovoPedido({ ...novoPedido, imagem: reader.result as string });
+        setNovoProduto({ ...novoProduto, imagem: reader.result as string });
         setImagePreview(reader.result as string);
       };
       reader.readAsDataURL(file);
@@ -106,19 +113,21 @@ const OrcamentoPage = () => {
         </div>
       </div>
 
+      {error && <Alert variant="danger">{error}</Alert>} 
+
       <div className="mt-4">
-        <h5>Pedidos</h5>
+        <h5>Produtos</h5>
         <div className="d-flex flex-wrap mb-4">
-          {pedidos.map((pedido, index) => (
+          {produtos.map((produto, index) => (
             <div key={index} className="mb-3 d-flex justify-content-start" style={{ marginRight: '10px' }}>
-              <div className="border p-2 rounded position-relative" style={{ width: '120px', height: '120px' }}>
-                <div>{pedido.descricao}</div>
-                <div>{pedido.endereco}</div>
-                {pedido.imagem && (
-                  <img src={pedido.imagem} alt="Pedido" style={{ width: '50px', height: '50px', marginTop: '5px' }} />
+              <div className="border p-2 rounded position-relative" style={{ width: '160px', height: '160px' }}>
+                <div>{produto.descricao}</div>
+                <div>{produto.endereco}</div>
+                {produto.imagem && (
+                  <img src={produto.imagem} alt="Produto" style={{ width: '60px', height: '60px', marginTop: '5px' }} />
                 )}
                 <div className="position-absolute" style={{ bottom: '10px', right: '10px' }}>
-                  <Button variant="link" onClick={() => handleDeletePedido(index)} className="text-danger p-0">
+                  <Button variant="link" onClick={() => handleDeleteProduto(index)} className="text-danger p-0">
                     <FaTrash size={20} />
                   </Button>
                 </div>
@@ -130,7 +139,7 @@ const OrcamentoPage = () => {
 
       <Modal show={modalOpen} onHide={() => setModalOpen(false)}>
         <Modal.Header closeButton>
-          <Modal.Title>Novo Pedido</Modal.Title>
+          <Modal.Title>Novo Produto</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <div className="mb-3 d-flex align-items-center">
@@ -146,7 +155,7 @@ const OrcamentoPage = () => {
             />
             {imagePreview && (
               <div className="mt-2">
-                <img src={imagePreview} alt="Imagem do Pedido" style={{ width: '50px', height: '50px' }} />
+                <img src={imagePreview} alt="Imagem do Produto" style={{ width: '50px', height: '50px' }} />
               </div>
             )}
           </div>
@@ -156,8 +165,8 @@ const OrcamentoPage = () => {
             <InputGroup>
               <FormControl
                 placeholder="Descrição"
-                value={novoPedido.descricao}
-                onChange={(e) => setNovoPedido({ ...novoPedido, descricao: e.target.value })}
+                value={novoProduto.descricao}
+                onChange={(e) => setNovoProduto({ ...novoProduto, descricao: e.target.value })}
               />
             </InputGroup>
           </div>
@@ -167,8 +176,8 @@ const OrcamentoPage = () => {
             <InputGroup>
               <FormControl
                 placeholder="Serviço"
-                value={novoPedido.servico}
-                onChange={(e) => setNovoPedido({ ...novoPedido, servico: e.target.value })}
+                value={novoProduto.servico}
+                onChange={(e) => setNovoProduto({ ...novoProduto, servico: e.target.value })}
               />
             </InputGroup>
           </div>
@@ -179,8 +188,8 @@ const OrcamentoPage = () => {
               <FormControl
                 type="number"
                 placeholder="Quantidade"
-                value={novoPedido.quantidade}
-                onChange={(e) => setNovoPedido({ ...novoPedido, quantidade: Number(e.target.value) })}
+                value={novoProduto.quantidade}
+                onChange={(e) => setNovoProduto({ ...novoProduto, quantidade: Number(e.target.value) })}
               />
             </InputGroup>
           </div>
@@ -191,8 +200,8 @@ const OrcamentoPage = () => {
               <FormControl
                 type="date"
                 placeholder="Data de Vencimento"
-                value={novoPedido.data_vencimento}
-                onChange={(e) => setNovoPedido({ ...novoPedido, data_vencimento: e.target.value })}
+                value={novoProduto.data_vencimento}
+                onChange={(e) => setNovoProduto({ ...novoProduto, data_vencimento: e.target.value })}
               />
             </InputGroup>
           </div>
@@ -201,15 +210,20 @@ const OrcamentoPage = () => {
           <Button variant="secondary" onClick={() => setModalOpen(false)}>
             Cancelar
           </Button>
-          <Button variant="primary" onClick={handleSalvarPedido}>
+          <Button variant="primary" onClick={handleSalvarProduto}>
             Salvar
           </Button>
         </Modal.Footer>
       </Modal>
 
-      <div style={{ position: 'fixed', bottom: '20px', right: '20px' }}>
+      <div style={{ position: 'fixed', bottom: '20px', right: '80px' }}>
         <Button variant="primary" onClick={() => setModalOpen(true)}>
-          + Adicionar Pedido
+          + Adicionar Produto
+        </Button>
+      </div>
+      <div style={{ position: 'fixed', bottom: '20px', left: '85px' }}>
+        <Button variant="success">
+          Salvar Orçamento
         </Button>
       </div>
     </div>
