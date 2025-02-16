@@ -1,0 +1,101 @@
+
+.container {
+    display: flex;
+    min-height: 100vh; /* Faz a página ocupar toda a altura da tela */
+    font-family: sans-serif;
+  }
+  
+  /* Sidebar (coluna esquerda) */
+  .sidebar {
+    width: 240px;
+    background-color: #034b92; /* Azul-escuro */
+    color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+  }
+  
+  /* Logo ou título do sistema dentro da sidebar */
+  .sidebar-logo {
+    margin-bottom: 2rem;
+  }
+  
+  .sidebar-logo h2 {
+    margin: 0;
+  }
+  
+  /* Navegação dentro da sidebar */
+  .sidebar-nav ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .sidebar-nav li {
+    margin-bottom: 1rem;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  
+  /* Área principal (coluna direita) */
+  .main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  /* Cabeçalho na área principal */
+  .header {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    background-color: #f5f5f5;
+    padding: 1rem;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  /* Informações do usuário no header */
+  .user-info {
+    margin-right: 1rem;
+  }
+  
+  .user-name {
+    font-weight: bold;
+    margin-right: 1rem;
+  }
+  
+  /* Botão de logout */
+  .logout-button {
+    padding: 0.5rem 1rem;
+    background-color: #ff5c5c;
+    border: none;
+    color: #ffffff;
+    cursor: pointer;
+    border-radius: 4px;
+  }
+  
+  .logout-button:hover {
+    background-color: #e93c3c;
+  }
+  
+  /* Conteúdo principal (texto, título, etc.) */
+  .main-section {
+    padding: 2rem;
+  }
+  
+  .main-box {
+    background-color: darkkhaki;
+    border-radius: 20px;
+    padding: 5%;
+  }
+
+  .main-section h1 {
+    margin-bottom: 1rem;
+    text-align: center;
+  }
+  
+  .main-section p {
+    line-height: 1.6;
+    text-align: justify;
+  }
+  
