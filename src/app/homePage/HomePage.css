@@ -4,38 +4,7 @@
     min-height: 100vh; /* Faz a página ocupar toda a altura da tela */
     font-family: sans-serif;
   }
-  
-  /* Sidebar (coluna esquerda) */
-  .sidebar {
-    width: 240px;
-    background-color: #034b92; /* Azul-escuro */
-    color: #ffffff;
-    display: flex;
-    flex-direction: column;
-    padding: 1rem;
-  }
-  
-  /* Logo ou título do sistema dentro da sidebar */
-  .sidebar-logo {
-    margin-bottom: 2rem;
-  }
-  
-  .sidebar-logo h2 {
-    margin: 0;
-  }
-  
-  /* Navegação dentro da sidebar */
-  .sidebar-nav ul {
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
-  }
-  
-  .sidebar-nav li {
-    margin-bottom: 1rem;
-    cursor: pointer;
-    font-weight: bold;
-  }
+
   
   /* Área principal (coluna direita) */
   .main-content {

@@ -2,6 +2,7 @@
 
 import React from 'react';
 import './HomePage.css';
+import SideBar from '../components/SideBar';
 
 interface HomePageProps {
   userName: string;
@@ -12,27 +13,7 @@ const HomePage: React.FC<HomePageProps> = ({ userName, onLogout }) => {
   return (
     <div className="container">
     
-      <aside className="sidebar">
-        <div className="sidebar-logo">
-          <h2>Porto Rico Decorações</h2>
-        </div>
-        <nav className="sidebar-nav">
-          <ul>
-            <li>
-              Fornecedores
-            </li>
-            <li>
-              Clientes 
-            </li>
-            <li>
-              Funcionários
-            </li>
-            <li>
-              Orçamentos
-            </li>
-          </ul>
-        </nav>
-      </aside>
+      <SideBar />
 
       <div className="main-content">
         <header className="header">
