@@ -23,9 +23,11 @@ const SideBar = () => {
             <li>
               Funcionários
             </li>
-            <li>
-              Orçamentos
-            </li>
+            <Link href='../orcamentoListPage'>
+              <li>
+                Orçamentos
+              </li>
+            </Link>
             <li>
               Pedidos                
             </li>
