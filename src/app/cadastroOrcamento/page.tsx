@@ -1,15 +1,25 @@
-'use client';
-
-import { useState } from 'react';
+'use client'
+import { useState, useEffect } from 'react';
 import { Button, InputGroup, FormControl, Modal, Alert } from 'react-bootstrap';
 import Select from 'react-select';
 import { FaTrash, FaCloudUploadAlt } from 'react-icons/fa';
 
-const OrcamentoPage = () => {
+const OrcamentoPage = ()=> {
+  const [clientes, setClientes] = useState<{ value: string; label: string }[]>([]);
   const [cliente, setCliente] = useState<any>(null);
   const [endereco, setEndereco] = useState('');
   const [clientesProdutos, setClientesProdutos] = useState<{
-    [key: string]: { descricao: string; servico: string; quantidade: number; data_vencimento: string; produto_id: string; endereco: string; imagem?: string }[]; 
+    [key: string]: { 
+      descricao: string; 
+      servico: string; 
+      quantidade: number; 
+      data_vencimento: string; 
+      produto_id: string; 
+      endereco: string; 
+      imagem?: string; 
+      status: string;
+      categoria: string;
+    }[];
   }>({});
   const [modalOpen, setModalOpen] = useState(false);
   const [novoProduto, setNovoProduto] = useState({
@@ -20,15 +30,32 @@ const OrcamentoPage = () => {
     produto_id: '',
     endereco: '',
     imagem: null as string | null,
+    status: 'Disponível',
+    categoria: 'Materiais',
   });
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null); 
+  const [error, setError] = useState<string | null>(null);
 
-  const clientes = [
-    { value: 'sophia', label: 'Sophia' },
-    { value: 'manoel', label: 'Manoel' },
-    { value: 'joao', label: 'João' },
-  ];
+  useEffect(() => {
+    const fetchClientes = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/clientes/');
+        if (!response.ok) {
+          throw new Error('Erro ao buscar clientes');
+        }
+        const data = await response.json();
+        const clientesFormatados = data.map((cliente: any) => ({
+          value: cliente.id.toString(),
+          label: cliente.nome,
+        }));
+        setClientes(clientesFormatados);
+      } catch (error) {
+        console.error('Erro ao carregar clientes:', error);
+      }
+    };
+
+    fetchClientes();
+  }, []);
 
   const handleSalvarProduto = () => {
     if (!novoProduto.descricao || !novoProduto.servico || !novoProduto.quantidade || !novoProduto.data_vencimento || !novoProduto.endereco) {
@@ -36,7 +63,7 @@ const OrcamentoPage = () => {
       return;
     }
 
-    setError(null); 
+    setError(null);
 
     if (cliente) {
       const clienteProduto = clientesProdutos[cliente.value] || [];
@@ -47,7 +74,7 @@ const OrcamentoPage = () => {
       });
     }
     setModalOpen(false);
-    setNovoProduto({ descricao: '', servico: '', quantidade: 0, data_vencimento: '', produto_id: '', endereco: '', imagem: null });
+    setNovoProduto({ descricao: '', servico: '', quantidade: 0, data_vencimento: '', produto_id: '', endereco: '', imagem: null, status: 'Disponível', categoria: 'Materiais' });
     setEndereco('');
     setImagePreview(null);
   };
@@ -80,6 +107,52 @@ const OrcamentoPage = () => {
       reader.readAsDataURL(file);
     }
   };
+  const handleSalvarOrcamento = async () => {
+    if (!cliente || produtos.length === 0) {
+      setError('Selecione um cliente e adicione pelo menos um produto.');
+      return;
+    }
+  
+    const orcamento = {
+      descricao: "Orçamento de reforma",
+      servico: produtos[0].servico, // Pegando o primeiro serviço da lista
+      quantidade: produtos.length,
+      data_vencimento: produtos[0].data_vencimento, // Pegando a data do primeiro produto
+      endereco: endereco,
+      cliente_id: parseInt(cliente.value, 10), // Convertendo para número
+      produtos: produtos.map(produto => ({
+        descricao: produto.descricao,
+        servico: produto.servico,
+        quantidade: produto.quantidade,
+        categoria: "Material", // Ajustando para o formato do curl
+        status: "Disponível", // Adicionando status conforme esperado pela API
+      }))
+    };
+  
+    try {
+      const response = await fetch('http://localhost:5000/orcamentos', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(orcamento),
+      });
+  
+      if (!response.ok) {
+        throw new Error('Erro ao salvar orçamento');
+      }
+  
+      alert('Orçamento salvo com sucesso!');
+      setClientesProdutos({});
+      setCliente(null);
+      setEndereco('');
+    } catch (error) {
+      console.error('Erro ao salvar orçamento:', error);
+      setError('Erro ao salvar orçamento.');
+    }
+  };
+  
+  
 
   return (
     <div className="container py-4">
@@ -87,11 +160,12 @@ const OrcamentoPage = () => {
 
       <div className="mb-4">
         <label>Cliente</label>
+        
         <Select
-          value={cliente}
+          value={clientes.find((c) => c.value === cliente?.value) || null}
           onChange={(selectedOption) => setCliente(selectedOption)}
           options={clientes}
-          placeholder="Selecione ou digite o nome do cliente"
+          placeholder="Selecione um cliente"
           isSearchable
         />
       </div>
@@ -222,12 +296,13 @@ const OrcamentoPage = () => {
         </Button>
       </div>
       <div style={{ position: 'fixed', bottom: '20px', left: '85px' }}>
-        <Button variant="success">
-          Salvar Orçamento
+      <Button variant="success" onClick={handleSalvarOrcamento}>
+                  Salvar Orçamento
         </Button>
       </div>
     </div>
   );
 };
+
 
 export default OrcamentoPage;

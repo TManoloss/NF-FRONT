@@ -13,7 +13,7 @@ const LoginPage = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
   
-    const res = await fetch('http://localhost:5000/auth/login', { // 🔥 Agora chamando o backend correto
+    const res = await fetch('http://localhost:5000/auth/login', { 
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -45,7 +45,7 @@ const LoginPage = () => {
 
           <div className="password-container">
             <input
-              type={showPassword ? 'text' : 'password'} // Corrige o tipo baseado no estado
+              type={showPassword ? 'text' : 'password'} 
               placeholder="Senha"
               value={senha}
               onChange={(e) => setPassword(e.target.value)}
@@ -74,7 +74,7 @@ const LoginPage = () => {
           justify-content: center;
           align-items: center;
           height: 100vh;
-          background: linear-gradient(135deg, #aacfff, #4a90e2);
+          background: #f0f0f0; 
         }
 
         .login-container {
@@ -105,7 +105,7 @@ const LoginPage = () => {
 
         .password-container input {
           width: 100%;
-          padding-right: 40px; /* Espaço para o ícone de olho */
+          padding-right: 40px;
         }
 
         .eye-icon {
@@ -118,18 +118,19 @@ const LoginPage = () => {
           display: flex;
           align-items: center;
           justify-content: center;
-          width: 30px;  /* Define a largura */
-          height: 30px; /* Define a altura */
+          width: 30px;
+          height: 30px;
         }
 
         .eye-icon:hover {
-          background: none; /* Impede a mudança de fundo */
+          background: none;
         }
 
         .eye-icon svg {
-          color: black !important; /* Define uma cor visível */
+          color: black;
           width: 20px;
           height: 20px;
+        }
 
         button {
           width: 100%;
@@ -147,7 +148,8 @@ const LoginPage = () => {
           background: linear-gradient(135deg, #003d99, #002766);
           transform: scale(1.05);
         }
-      `}</style>
+`}</style>
+
     </div>
   );
 };

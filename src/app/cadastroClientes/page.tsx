@@ -20,7 +20,7 @@ const CadastroPage = () => {
     console.log('Dados enviados:', formData);
     
     try {
-        const response = await fetch('http://localhost:5000/api/funcionarios', {
+        const response = await fetch('http://localhost:5000/clientes', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
