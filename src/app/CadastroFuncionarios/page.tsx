@@ -66,7 +66,7 @@ const CadastroPage = () => {
           justify-content: center;
           align-items: center;
           height: 100vh;
-          background: #f0f0f0; /* Cinza claro para combinar com o branco do formulário */
+          background: #f0f0f0; 
         }
 
         .form-container {
