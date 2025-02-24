@@ -6,8 +6,7 @@ const CadastrarMateriais = () => {
   const [formData, setFormData] = useState({
     descricao: '',
     fornecedor_id: '',
-    produto_destino: '',
-    numero_pedido: ''
+    produto_destino: ''
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -30,7 +29,6 @@ const CadastrarMateriais = () => {
           <div className="input-group">
             <input type="number" name="fornecedor_id" placeholder="ID do Fornecedor" value={formData.fornecedor_id} onChange={handleChange} required />
             <input type="number" name="produto_destino" placeholder="ID do Produto Destino" value={formData.produto_destino} onChange={handleChange} />
-            <input type="number" name="numero_pedido" placeholder="Número do Pedido" value={formData.numero_pedido} onChange={handleChange} />
           </div>
           <button type="submit">Cadastrar</button>
         </form>
