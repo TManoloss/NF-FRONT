@@ -16,22 +16,30 @@ const statusOptions = [
   'Entregue'
 ];
 
-// Simulating database table "Produto"
 const produtos = [
-  { id: 5, descricao: 'Mesa de Madeira', servico: 'Reforma', quantidade: 10, categoria: 'Móveis', status: 'Produto na Oficina' },
-  { id: 8, descricao: 'Armário Planejado', servico: 'Fabricação', quantidade: 5, categoria: 'Móveis', status: 'Em Produção' },
+  { id: 5, descricao: 'Produto A', servico: 'Serviço A', quantidade: 10, categoria: 'Categoria A', status: 'Disponível' },
+  { id: 8, descricao: 'Produto B', servico: 'Serviço B', quantidade: 5, categoria: 'Categoria B', status: 'Indisponível' },
 ];
 
-// Simulating database table "Ordem de Serviço"
 const ordenServico = [
-  { id: 1, descricao: 'Reforma apartamento', status: 'Produto na Oficina', numero_pedido: 12345, produto_id: 5, material_id: 2 },
-  { id: 2, descricao: 'Troca de moveis', status: 'Em Produção', numero_pedido: 12346, produto_id: 8, material_id: 3 },
+  { id: 1, descricao: 'Reforma apartamento', status: 'Produto na Oficina', numero_pedido: 12345, produto_id: 5, material_ids: [2, 3] },
+  { id: 2, descricao: 'Troca de móveis', status: 'Em Produção', numero_pedido: 12346, produto_id: 8, material_ids: [3] },
+];
+
+
+//Lista de Materiais
+const Materiais = [
+  { id: 2, descricao: 'Tinta Branca', },
+  { id: 3, descricao: 'Parafuso de Aço' },
 ];
 
 const OrdemServicoPage = () => {
   const [ordens, setOrdens] = useState(ordenServico);
   const [modalShow, setModalShow] = useState(false);
   const [selectedProduto, setSelectedProduto] = useState<typeof produtos[0] | null>(null);
+
+const [modalMateriaisShow, setModalMateriaisShow] = useState(false);
+const [selectedMateriais, setSelectedMateriais] = useState<typeof Materiais>([]);
 
   const handleStatusChange = (id: number, newStatus: string) => {
     setOrdens(ordens.map(ordem => ordem.id === id ? { ...ordem, status: newStatus } : ordem));
@@ -43,6 +51,12 @@ const OrdemServicoPage = () => {
     setModalShow(true);
   };
 
+  const handleShowMateriais = (materialIds: number[]) => {
+    const materiaisFiltrados = Materiais.filter(m => materialIds.includes(m.id));
+    setSelectedMateriais(materiaisFiltrados);
+    setModalMateriaisShow(true);
+  };   
+
   return (
     <div className="container py-4">
       <h1 className="mb-4">Ordens de Serviço</h1>
@@ -51,6 +65,7 @@ const OrdemServicoPage = () => {
     <tr>
       <th>Descrição</th>
       <th>Status</th>
+      <th>Materiais</th>
       <th>Ações</th>
     </tr>
   </thead>
@@ -84,6 +99,11 @@ const OrdemServicoPage = () => {
 
         </td>
         <td>
+        <Button 
+            style={{ backgroundColor: '#002766', borderColor: '#002766' }} 
+            onClick={() => handleShowMateriais(ordem.material_ids)}>+</Button>
+        </td>
+        <td>
           <Button 
             style={{ backgroundColor: '#002766', borderColor: '#002766' }} 
             onClick={() => handleShowDetails(ordem.produto_id)}>+</Button>
@@ -114,6 +134,28 @@ const OrdemServicoPage = () => {
         </Modal.Body>
         <Modal.Footer>
           <Button style={{ backgroundColor: '#B71C1C', borderColor: '#B71C1C' }} onClick={() => setModalShow(false)}>Fechar</Button>
+        </Modal.Footer>
+      </Modal>
+
+      <Modal show={modalMateriaisShow} onHide={() => setModalMateriaisShow(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Materiais da Ordem de Serviço</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {selectedMateriais.length > 0 ? (
+            <ul>
+              {selectedMateriais.map((material: { id: number; descricao: string }) => (
+                <li key={material.id}><strong>ID:</strong> {material.id} - {material.descricao}</li>
+              ))}
+            </ul>
+          ) : (
+            <p>Nenhum material associado.</p>
+          )}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button style={{ backgroundColor: '#B71C1C', borderColor: '#B71C1C' }} onClick={() => setModalMateriaisShow(false)}>
+            Fechar
+          </Button>
         </Modal.Footer>
       </Modal>
     </div>
