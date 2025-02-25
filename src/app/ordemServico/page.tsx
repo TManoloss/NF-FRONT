@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { Button, Modal, Table, Dropdown } from 'react-bootstrap';
+import { useState, useEffect } from 'react';
+import { Button, Modal, Table, Dropdown, Spinner } from 'react-bootstrap';
 
 const statusOptions = [
   'Produto em Estoque',
@@ -16,33 +16,74 @@ const statusOptions = [
   'Entregue'
 ];
 
-const produtos = [
-  { id: 5, descricao: 'Produto A', servico: 'Serviço A', quantidade: 10, categoria: 'Categoria A', status: 'Disponível' },
-  { id: 8, descricao: 'Produto B', servico: 'Serviço B', quantidade: 5, categoria: 'Categoria B', status: 'Indisponível' },
-];
+interface OrdemServico {
+  id: number;
+  descricao: string;
+  status: string;
+  numero_pedido: number;
+  produto_id: number;
+  material_ids: number[];
+}
 
-const ordenServico = [
-  { id: 1, descricao: 'Reforma apartamento', status: 'Produto na Oficina', numero_pedido: 12345, produto_id: 5, material_ids: [2, 3] },
-  { id: 2, descricao: 'Troca de móveis', status: 'Em Produção', numero_pedido: 12346, produto_id: 8, material_ids: [3] },
-];
+interface Produto {
+  id: number;
+  descricao: string;
+  servico: string;
+  quantidade: number;
+  categoria: string;
+  status: string;
+}
 
-
-//Lista de Materiais
-const Materiais = [
-  { id: 2, descricao: 'Tinta Branca', },
-  { id: 3, descricao: 'Parafuso de Aço' },
-];
+interface Material {
+  id: number;
+  descricao: string;
+}
 
 const OrdemServicoPage = () => {
-  const [ordens, setOrdens] = useState(ordenServico);
+  const [ordens, setOrdens] = useState<OrdemServico[]>([]);
+  const [produtos, setProdutos] = useState<Produto[]>([]);
+  const [materiais, setMateriais] = useState<Material[]>([]);
+  const [loading, setLoading] = useState(true);
   const [modalShow, setModalShow] = useState(false);
-  const [selectedProduto, setSelectedProduto] = useState<typeof produtos[0] | null>(null);
+  const [selectedProduto, setSelectedProduto] = useState<Produto | null>(null);
+  const [modalMateriaisShow, setModalMateriaisShow] = useState(false);
+  const [selectedMateriais, setSelectedMateriais] = useState<Material[]>([]);
 
-const [modalMateriaisShow, setModalMateriaisShow] = useState(false);
-const [selectedMateriais, setSelectedMateriais] = useState<typeof Materiais>([]);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const ordensRes = await fetch('http://localhost:5000/ordens');
+        const produtosRes = await fetch('http://localhost:5000/produtos');
+        const materiaisRes = await fetch('http://localhost:5000/materiais');
 
-  const handleStatusChange = (id: number, newStatus: string) => {
-    setOrdens(ordens.map(ordem => ordem.id === id ? { ...ordem, status: newStatus } : ordem));
+        const ordensData = await ordensRes.json();
+        const produtosData = await produtosRes.json();
+        const materiaisData = await materiaisRes.json();
+
+        setOrdens(ordensData);
+        setProdutos(produtosData);
+        setMateriais(materiaisData);
+      } catch (error) {
+        console.error('Erro ao buscar dados:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const handleStatusChange = async (id: number, newStatus: string) => {
+    try {
+      await fetch(`http://localhost:5000/ordens/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: newStatus }),
+      });
+      setOrdens(ordens.map(ordem => (ordem.id === id ? { ...ordem, status: newStatus } : ordem)));
+    } catch (error) {
+      console.error('Erro ao atualizar status:', error);
+    }
   };
 
   const handleShowDetails = (produtoId: number) => {
@@ -52,67 +93,51 @@ const [selectedMateriais, setSelectedMateriais] = useState<typeof Materiais>([])
   };
 
   const handleShowMateriais = (materialIds: number[]) => {
-    const materiaisFiltrados = Materiais.filter(m => materialIds.includes(m.id));
+    const materiaisFiltrados = materiais.filter(m => materialIds.includes(m.id));
     setSelectedMateriais(materiaisFiltrados);
     setModalMateriaisShow(true);
-  };   
+  };
 
   return (
     <div className="container py-4">
       <h1 className="mb-4">Ordens de Serviço</h1>
-      <Table striped bordered hover>
-  <thead>
-    <tr>
-      <th>Descrição</th>
-      <th>Status</th>
-      <th>Materiais</th>
-      <th>Ações</th>
-    </tr>
-  </thead>
-  <tbody>
-    {ordens.map((ordem) => (
-      <tr key={ordem.id}>
-        <td>{ordem.descricao}</td>
-        <td>
-    <Dropdown 
-        onSelect={(eventKey) => eventKey && handleStatusChange(ordem.id, eventKey)} 
-        align="end">
-        <Dropdown.Toggle 
-            style={{ backgroundColor: '#002766', borderColor: '#002766' }} 
-            variant="secondary" 
-            id={`dropdown-status-${ordem.id}`}>
-            {ordem.status}
-        </Dropdown.Toggle>
-        <Dropdown.Menu 
-            flip={false} 
-            rootCloseEvent="mousedown" 
-            popperConfig={{ modifiers: [{ name: "preventOverflow", options: { boundary: "window" } }] }} 
-            style={{ zIndex: 1050 }}>
-            {statusOptions.map((status) => (
-            <Dropdown.Item key={status} eventKey={status}>
-                {status}
-            </Dropdown.Item>
+      {loading ? (
+        <Spinner animation="border" />
+      ) : (
+        <Table striped bordered hover>
+          <thead>
+            <tr>
+              <th>Descrição</th>
+              <th>Status</th>
+              <th>Materiais</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            {ordens.map(ordem => (
+              <tr key={ordem.id}>
+                <td>{ordem.descricao}</td>
+                <td>
+                  <Dropdown onSelect={eventKey => eventKey && handleStatusChange(ordem.id, eventKey)}>
+                    <Dropdown.Toggle variant="secondary">{ordem.status}</Dropdown.Toggle>
+                    <Dropdown.Menu>
+                      {statusOptions.map(status => (
+                        <Dropdown.Item key={status} eventKey={status}>{status}</Dropdown.Item>
+                      ))}
+                    </Dropdown.Menu>
+                  </Dropdown>
+                </td>
+                <td>
+                  <Button onClick={() => handleShowMateriais(ordem.material_ids)}>+</Button>
+                </td>
+                <td>
+                  <Button onClick={() => handleShowDetails(ordem.produto_id)}>+</Button>
+                </td>
+              </tr>
             ))}
-        </Dropdown.Menu>
-        </Dropdown>
-
-
-        </td>
-        <td>
-        <Button 
-            style={{ backgroundColor: '#002766', borderColor: '#002766' }} 
-            onClick={() => handleShowMateriais(ordem.material_ids)}>+</Button>
-        </td>
-        <td>
-          <Button 
-            style={{ backgroundColor: '#002766', borderColor: '#002766' }} 
-            onClick={() => handleShowDetails(ordem.produto_id)}>+</Button>
-        </td>
-      </tr>
-    ))}
-  </tbody>
-</Table>
-
+          </tbody>
+        </Table>
+      )}
 
       <Modal show={modalShow} onHide={() => setModalShow(false)}>
         <Modal.Header closeButton>
@@ -133,7 +158,7 @@ const [selectedMateriais, setSelectedMateriais] = useState<typeof Materiais>([])
           )}
         </Modal.Body>
         <Modal.Footer>
-          <Button style={{ backgroundColor: '#B71C1C', borderColor: '#B71C1C' }} onClick={() => setModalShow(false)}>Fechar</Button>
+          <Button onClick={() => setModalShow(false)}>Fechar</Button>
         </Modal.Footer>
       </Modal>
 
@@ -144,8 +169,8 @@ const [selectedMateriais, setSelectedMateriais] = useState<typeof Materiais>([])
         <Modal.Body>
           {selectedMateriais.length > 0 ? (
             <ul>
-              {selectedMateriais.map((material: { id: number; descricao: string }) => (
-                <li key={material.id}><strong>ID:</strong> {material.id} - {material.descricao}</li>
+              {selectedMateriais.map(material => (
+                <li key={material.id}>{material.descricao}</li>
               ))}
             </ul>
           ) : (
@@ -153,9 +178,7 @@ const [selectedMateriais, setSelectedMateriais] = useState<typeof Materiais>([])
           )}
         </Modal.Body>
         <Modal.Footer>
-          <Button style={{ backgroundColor: '#B71C1C', borderColor: '#B71C1C' }} onClick={() => setModalMateriaisShow(false)}>
-            Fechar
-          </Button>
+          <Button onClick={() => setModalMateriaisShow(false)}>Fechar</Button>
         </Modal.Footer>
       </Modal>
     </div>
