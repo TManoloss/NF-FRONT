@@ -56,15 +56,53 @@
     background-color: darkkhaki;
     border-radius: 20px;
     padding: 5%;
+    margin: 0 auto;
+    text-align: center;
+    word-wrap: break-word; /* Garante que o texto não ultrapasse os limites do bloco */
+    overflow-wrap: break-word; /* Quebra as palavras grandes se necessário */
   }
 
   .main-section h1 {
     margin-bottom: 1rem;
     text-align: center;
+    font-size: 1.8rem; /* Mantém o título responsivo */
   }
   
   .main-section p {
     line-height: 1.6;
     text-align: justify;
+    font-size: 1rem;
+    text-align: justify;
+  }
+
+  .quick-access-section {
+    margin-top: 2rem;
+    background-color: #70c968;
+    padding: 1rem;
+    border-radius: 20px;
   }
   
+  .quick-access-section h2 {
+    margin-bottom: 1rem;
+    text-align: center;
+  }
+  
+  .quick-access-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap; /* permite que os botões quebrem linha em telas menores */
+  }
+  
+  .quick-access-buttons button {
+    padding: 0.5rem 1rem;
+    border: none;
+    background-color: #337ab7; /* cor de fundo (exemplo) */
+    color: #fff;              /* cor do texto */
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .quick-access-buttons button:hover {
+    background-color: #286090; /* cor ao passar o mouse */
+  }
