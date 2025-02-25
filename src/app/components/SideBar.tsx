@@ -14,26 +14,36 @@ const SideBar = () => {
         </Link>
         <nav className="sidebar-nav">
           <ul>
-            <li>
-              Fornecedores
-            </li>
-            <li>
-              Clientes 
-            </li>
-            <li>
-              Funcionários
-            </li>
+            <Link href='../fornecedorListPage'>
+              <li>
+                Fornecedores
+              </li>
+            </Link>
+            <Link href='../clienteListPage'>
+              <li>
+                Clientes 
+              </li>
+            </Link>
+            <Link href='../funcionarioListPage'>
+              <li>
+                Funcionários
+              </li>
+            </Link>
             <Link href='../orcamentoListPage'>
               <li>
                 Orçamentos
               </li>
             </Link>
-            <li>
-              Pedidos                
-            </li>
-            <li>
-              Ordens de Serviço
-            </li>
+            <Link href='../pedidoListPage'>
+              <li>
+                Pedidos                
+              </li>
+            </Link>
+            <Link href='../ordemServico'>
+              <li>
+                Ordens de Serviço
+              </li>
+            </Link>
           </ul>
         </nav>
       </aside>
