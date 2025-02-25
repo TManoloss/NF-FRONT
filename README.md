@@ -68,9 +68,9 @@ O funcionário pode acompanhar e atualizar a execução das ordens de serviço:
 
 ## Tecnologias Utilizadas
 
-- **Backend:** [ ]
-- **Frontend:** [Next.JS]
-- **Banco de Dados:** [PostgreSQL, Prisma, Express]
+- **Backend:** [Node.js, TypeScript, Express, Prisma]
+- **Frontend:** [Next.JS, React, TypeScript]
+- **Banco de Dados:** [PostgreSQL]
 
 
 ### Pré-requisitos
