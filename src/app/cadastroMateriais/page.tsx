@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import SideBar from '../components/SideBar'; // ajuste o caminho conforme sua estrutura de pastas
 
 const CadastrarMateriais = () => {
   const [formData, setFormData] = useState({
@@ -36,29 +37,53 @@ const CadastrarMateriais = () => {
 
   return (
     <div className="page-container">
+      {/* Componente da SideBar */}
+      <SideBar />
+
+      {/* Conteúdo do formulário */}
       <div className="form-container">
         <h1>Cadastro de Materiais</h1>
         <form onSubmit={handleSubmit}>
           <div className="input-group">
-            <input type="text" name="descricao" placeholder="Descrição" value={formData.descricao} onChange={handleChange} required />
+            <input
+              type="text"
+              name="descricao"
+              placeholder="Descrição"
+              value={formData.descricao}
+              onChange={handleChange}
+              required
+            />
           </div>
           <div className="input-group">
-            <input type="number" name="fornecedor_id" placeholder="ID do Fornecedor" value={formData.fornecedor_id} onChange={handleChange} required />
-            <input type="number" name="produto_destino" placeholder="ID do Produto Destino" value={formData.produto_destino} onChange={handleChange} />
+            <input
+              type="number"
+              name="fornecedor_id"
+              placeholder="ID do Fornecedor"
+              value={formData.fornecedor_id}
+              onChange={handleChange}
+              required
+            />
+            <input
+              type="number"
+              name="produto_destino"
+              placeholder="ID do Produto Destino"
+              value={formData.produto_destino}
+              onChange={handleChange}
+            />
           </div>
           <button type="submit">Cadastrar</button>
         </form>
       </div>
+
       <style jsx>{`
         .page-container {
           display: flex;
-          justify-content: center;
-          align-items: center;
           height: 100vh;
           background: #f0f0f0;
         }
 
         .form-container {
+          margin: auto;
           max-width: 450px;
           padding: 20px;
           text-align: center;
