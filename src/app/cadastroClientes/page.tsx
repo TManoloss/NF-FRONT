@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import SideBar from '../components/SideBar';
 
 const CadastroPage = () => {
   const [formData, setFormData] = useState({
@@ -20,58 +21,98 @@ const CadastroPage = () => {
     console.log('Dados enviados:', formData);
     
     try {
-        const response = await fetch('http://localhost:5000/clientes', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(formData),
-        });
+      const response = await fetch('http://localhost:5000/clientes', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
 
-        if (!response.ok) {
-            throw new Error('Erro ao cadastrar funcionário');
-        }
+      if (!response.ok) {
+        throw new Error('Erro ao cadastrar funcionário');
+      }
 
-        const data = await response.json();
-        console.log('Funcionário cadastrado com sucesso:', data);
+      const data = await response.json();
+      console.log('Funcionário cadastrado com sucesso:', data);
     } catch (error) {
-        console.error('Erro:', error);
+      console.error('Erro:', error);
     }
   };
 
   return (
     <div className="page-container">
+      <SideBar />
       <div className="form-container">
         <h1>Cadastro de Clientes</h1>
         <form onSubmit={handleSubmit}>
           <div className="input-group">
-            <input type="text" name="nome" placeholder="Nome" value={formData.nome} onChange={handleChange} required />
-            <input type="email" name="email" placeholder="Email" value={formData.email} onChange={handleChange} required />
+            <input
+              type="text"
+              name="nome"
+              placeholder="Nome"
+              value={formData.nome}
+              onChange={handleChange}
+              required
+            />
+            <input
+              type="email"
+              name="email"
+              placeholder="Email"
+              value={formData.email}
+              onChange={handleChange}
+              required
+            />
           </div>
           <div className="input-group">
-            <input type="text" name="endereco" placeholder="Endereço" value={formData.endereco} onChange={handleChange} required />
-            <input type="text" name="telefone" placeholder="Telefone" value={formData.telefone} onChange={handleChange} required />
-            <input type="text" name="cpf" placeholder="CPF" value={formData.cpf} onChange={handleChange} required />
+            <input
+              type="text"
+              name="endereco"
+              placeholder="Endereço"
+              value={formData.endereco}
+              onChange={handleChange}
+              required
+            />
+            <input
+              type="text"
+              name="telefone"
+              placeholder="Telefone"
+              value={formData.telefone}
+              onChange={handleChange}
+              required
+            />
+            <input
+              type="text"
+              name="cpf"
+              placeholder="CPF"
+              value={formData.cpf}
+              onChange={handleChange}
+              required
+            />
           </div>
           <button type="submit">Cadastrar</button>
         </form>
       </div>
+
       <style jsx>{`
         .page-container {
           display: flex;
-          justify-content: center;
-          align-items: center;
-          height: 100vh;
-          background: #f0f0f0; /* Cinza claro para combinar com o branco do formulário */
+          min-height: 100vh;
+          background: #f0f0f0; 
         }
 
+        /* Sidebar ocupará o espaço que tiver definido dentro do próprio componente SideBar, 
+           então aqui apenas garantimos que o resto do espaço fica com o form-container. */
+
         .form-container {
-          max-width: 450px;
+          flex: 1;           /* Ocupa todo o espaço restante ao lado do sidebar */
           padding: 20px;
           text-align: center;
           border-radius: 8px;
+          margin: 20px;      /* Margem para dar um respiro nas laterais */
           box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
           background-color: #fff;
+          max-width: 800px;  /* Se quiser limitar a largura do formulário */
         }
 
         .input-group {
@@ -82,7 +123,7 @@ const CadastroPage = () => {
         }
 
         .input-group input[name="cpf"] {
-          width: 100%; /* CPF ocupa a linha inteira */
+          width: 100%;
         }
 
         input {
@@ -103,7 +144,7 @@ const CadastroPage = () => {
           font-size: 16px;
           cursor: pointer;
           transition: background 0.3s ease-in-out, transform 0.2s ease;
-        } 
+        }
 
         button:hover {
           background: linear-gradient(135deg, #003d99, #002766);
