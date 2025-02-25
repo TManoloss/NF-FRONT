@@ -70,17 +70,20 @@ const OrcamentoDetailPage = () => {
     if (!budget) return;
 
     try {
-      const response = await fetch('http://localhost:5000/pedido', {
+      const response = await fetch('http://localhost:5000/pedidos', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ orcamento_id: budget.id }),
+        body: JSON.stringify({
+          numero: `PED-${budget.id}`, // Gerando o número do pedido
+          status: 'Pendente', // Definindo o status como "Pendente"
+          orcamento_id: budget.id, // Usando o ID do orçamento
+        }),
       });
 
       if (!response.ok) {
         throw new Error('Erro ao gerar o pedido.');
       }
 
-      // Aqui você pode implementar uma lógica adicional (ex: redirecionar, exibir mensagem de sucesso, etc.)
       alert('Pedido gerado com sucesso!');
     } catch (error: any) {
       console.error('Erro ao gerar o pedido:', error);

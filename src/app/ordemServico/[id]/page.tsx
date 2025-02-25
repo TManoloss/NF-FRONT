@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useParams } from 'next/navigation'; // Correto para App Router
 import { Button, Modal, Table, Dropdown, Spinner } from 'react-bootstrap';
 
 const statusOptions = [
@@ -16,13 +17,24 @@ const statusOptions = [
   'Entregue'
 ];
 
-interface OrdemServico {
+interface Cliente {
+  id: number;
+  nome: string;
+  email: string;
+  telefone: string;
+  endereco: string;
+  cpf: string;
+}
+
+interface Orcamento {
   id: number;
   descricao: string;
-  status: string;
-  numero_pedido: number;
-  produto_id: number;
-  material_ids: number[];
+  servico: string;
+  quantidade: number;
+  data_vencimento: string;
+  endereco: string;
+  cliente_id: number;
+  cliente: Cliente;
 }
 
 interface Produto {
@@ -32,17 +44,36 @@ interface Produto {
   quantidade: number;
   categoria: string;
   status: string;
+  orcamento_id: number;
+  materiais: any[]; // Ajuste conforme necessário
+}
+
+interface Pedido {
+  id: number;
+  numero: string;
+  status: string;
+  data_criacao: string;
+  orcamento_id: number;
+  orcamento: Orcamento;
+}
+
+interface OrdemServico {
+  id: number;
+  descricao: string;
+  numero_pedido: number;
+  pedido: Pedido;
+  produtos: Produto[];
 }
 
 interface Material {
   id: number;
   descricao: string;
+  quantidade: number;
 }
 
 const OrdemServicoPage = () => {
-  const [ordens, setOrdens] = useState<OrdemServico[]>([]);
-  const [produtos, setProdutos] = useState<Produto[]>([]);
-  const [materiais, setMateriais] = useState<Material[]>([]);
+  const { id } = useParams(); // Obtendo o ID corretamente no App Router
+  const [ordem, setOrdem] = useState<OrdemServico | null>(null);
   const [loading, setLoading] = useState(true);
   const [modalShow, setModalShow] = useState(false);
   const [selectedProduto, setSelectedProduto] = useState<Produto | null>(null);
@@ -50,19 +81,19 @@ const OrdemServicoPage = () => {
   const [selectedMateriais, setSelectedMateriais] = useState<Material[]>([]);
 
   useEffect(() => {
+    if (!id) return;
+
     const fetchData = async () => {
+      setLoading(true);
       try {
-        const ordensRes = await fetch('http://localhost:5000/ordens');
-        const produtosRes = await fetch('http://localhost:5000/produtos');
-        const materiaisRes = await fetch('http://localhost:5000/materiais');
+        const response = await fetch(`http://localhost:5000/ordem-servico/${id}`);
 
-        const ordensData = await ordensRes.json();
-        const produtosData = await produtosRes.json();
-        const materiaisData = await materiaisRes.json();
+        if (!response.ok) {
+          throw new Error(`Erro ao buscar dados: ${response.status}`);
+        }
 
-        setOrdens(ordensData);
-        setProdutos(produtosData);
-        setMateriais(materiaisData);
+        const data = await response.json();
+        setOrdem(data);
       } catch (error) {
         console.error('Erro ao buscar dados:', error);
       } finally {
@@ -71,55 +102,71 @@ const OrdemServicoPage = () => {
     };
 
     fetchData();
-  }, []);
+  }, [id]);
 
-  const handleStatusChange = async (id: number, newStatus: string) => {
+  const handleStatusChange = async (newStatus: string) => {
+    if (!ordem) return;
+
     try {
-      await fetch(`http://localhost:5000/ordens/${id}`, {
+      const response = await fetch(`http://localhost:5000/ordem-servico/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: newStatus }),
       });
-      setOrdens(ordens.map(ordem => (ordem.id === id ? { ...ordem, status: newStatus } : ordem)));
+
+      if (!response.ok) {
+        throw new Error(`Erro ao atualizar status: ${response.status}`);
+      }
+
+      setOrdem({ ...ordem, pedido: { ...ordem.pedido, status: newStatus } });
     } catch (error) {
       console.error('Erro ao atualizar status:', error);
     }
   };
 
-  const handleShowDetails = (produtoId: number) => {
-    const produto = produtos.find(p => p.id === produtoId);
-    setSelectedProduto(produto || null);
+  const handleShowDetails = (produto: Produto) => {
+    setSelectedProduto(produto);
     setModalShow(true);
   };
 
-  const handleShowMateriais = (materialIds: number[]) => {
-    const materiaisFiltrados = materiais.filter(m => materialIds.includes(m.id));
-    setSelectedMateriais(materiaisFiltrados);
+  const handleShowMateriais = (materiais: any[]) => {
+    setSelectedMateriais(materiais);
     setModalMateriaisShow(true);
   };
 
+  if (loading) {
+    return (
+      <div className="d-flex justify-content-center align-items-center vh-100">
+        <Spinner animation="border" />
+      </div>
+    );
+  }
+
+  if (!ordem) {
+    return <p>Ordem de serviço não encontrada.</p>;
+  }
+
   return (
     <div className="container py-4">
-      <h1 className="mb-4">Ordens de Serviço</h1>
-      {loading ? (
-        <Spinner animation="border" />
-      ) : (
-        <Table striped bordered hover>
-          <thead>
-            <tr>
-              <th>Descrição</th>
-              <th>Status</th>
-              <th>Materiais</th>
-              <th>Ações</th>
-            </tr>
-          </thead>
-          <tbody>
-            {ordens.map(ordem => (
-              <tr key={ordem.id}>
-                <td>{ordem.descricao}</td>
+      <h1 className="mb-4">Ordem de Serviço</h1>
+      
+      <Table striped bordered hover>
+        <thead>
+          <tr>
+            <th>Descrição</th>
+            <th>Status</th>
+            <th>Materiais</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          {ordem && ordem.produtos && Array.isArray(ordem.produtos) && ordem.produtos.length > 0 ? (
+            ordem.produtos.map((produto, index) => (
+              <tr key={produto.id}>
+                <td>{produto.descricao || 'Descrição não disponível'}</td>
                 <td>
-                  <Dropdown onSelect={eventKey => eventKey && handleStatusChange(ordem.id, eventKey)}>
-                    <Dropdown.Toggle variant="secondary">{ordem.status}</Dropdown.Toggle>
+                  <Dropdown onSelect={eventKey => eventKey && handleStatusChange(eventKey)}>
+                    <Dropdown.Toggle variant="secondary">{ordem.pedido.status}</Dropdown.Toggle>
                     <Dropdown.Menu>
                       {statusOptions.map(status => (
                         <Dropdown.Item key={status} eventKey={status}>{status}</Dropdown.Item>
@@ -128,16 +175,20 @@ const OrdemServicoPage = () => {
                   </Dropdown>
                 </td>
                 <td>
-                  <Button onClick={() => handleShowMateriais(ordem.material_ids)}>+</Button>
+                  <Button onClick={() => handleShowMateriais(produto.materiais)}>+</Button>
                 </td>
                 <td>
-                  <Button onClick={() => handleShowDetails(ordem.produto_id)}>+</Button>
+                  <Button onClick={() => handleShowDetails(produto)}>+</Button>
                 </td>
               </tr>
-            ))}
-          </tbody>
-        </Table>
-      )}
+            ))
+          ) : (
+            <tr>
+              <td colSpan={4}>Nenhum produto disponível.</td>
+            </tr>
+          )}
+        </tbody>
+      </Table>
 
       <Modal show={modalShow} onHide={() => setModalShow(false)}>
         <Modal.Header closeButton>
@@ -164,13 +215,13 @@ const OrdemServicoPage = () => {
 
       <Modal show={modalMateriaisShow} onHide={() => setModalMateriaisShow(false)}>
         <Modal.Header closeButton>
-          <Modal.Title>Materiais da Ordem de Serviço</Modal.Title>
+          <Modal.Title>Materiais do Produto</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           {selectedMateriais.length > 0 ? (
             <ul>
               {selectedMateriais.map(material => (
-                <li key={material.id}>{material.descricao}</li>
+                <li key={material.id}>{`ID: ${material.id}, Quantidade: ${material.quantidade}`}</li>
               ))}
             </ul>
           ) : (

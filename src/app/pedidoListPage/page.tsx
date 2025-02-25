@@ -11,6 +11,13 @@ interface Pedido {
   dataPedido: string;
   valorTotal: number;
   status: string;
+  numero: number;
+  data_criacao: string;
+  orcamento: {
+    cliente: {
+      nome: string;
+    };
+  };
 }
 
 const ITEMS_PER_PAGE = 8;
@@ -55,6 +62,22 @@ const PedidoListPage = () => {
   const currentPedidos = pedidos.slice(indexOfFirstItem, indexOfLastItem);
   const totalPages = Math.ceil(pedidos.length / ITEMS_PER_PAGE);
 
+  const fetchPedido = async (id: number) => {
+    try {
+      const response = await fetch(`http://localhost:5000/pedidos/${id}`);
+      if (!response.ok) {
+        throw new Error('Erro ao buscar pedido');
+      }
+      const data = await response.json();
+      // Processar os dados recebidos
+    } catch (error) {
+      console.error('Erro ao buscar pedido:', error);
+    }
+  };
+
+  // Chame a função com o ID do pedido desejado
+  fetchPedido(1);
+
   return (
     <div className="d-flex">
       <SideBar />
@@ -81,15 +104,14 @@ const PedidoListPage = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {currentPedidos.map((pedido) => (
+                    {currentPedidos.map((pedido: Pedido) => (
                       <tr key={pedido.id}>
                         <td>{pedido.id}</td>
-                        <td>{pedido.clienteNome}</td>
-                        <td>{pedido.dataPedido}</td>
-                        <td>{pedido.valorTotal}</td>
-                        <td>{pedido.status}</td>
+                        <td>{pedido.orcamento.cliente.nome || 'N/A'}</td>
+                        <td>{new Date(pedido.data_criacao).toLocaleDateString() || 'N/A'}</td>
+                        <td>{pedido.valorTotal || 'N/A'}</td>
+                        <td>{pedido.status || 'N/A'}</td>
                         <td>
-                          {/* Ajuste a rota de detalhes conforme sua necessidade */}
                           <Link href={`/pedidos/${pedido.id}`} passHref>
                             <Button variant="info" size="sm">Ver Detalhes</Button>
                           </Link>

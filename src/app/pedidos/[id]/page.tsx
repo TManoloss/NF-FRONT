@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
+import { useParams } from 'next/navigation';
 import { Container, Button, Spinner, Card, ListGroup } from 'react-bootstrap';
 import SideBar from '@/app/components/SideBar';
 
@@ -63,35 +63,47 @@ interface PedidoDetail {
 }
 
 const PedidoDetalhesPage = () => {
-  const router = useRouter();
-  const { id } = router.query; // O id vem da URL (ex: /pedidos/1)
+  const params = useParams();
+  const id = params.id as string; // Pegando o ID corretamente como string
   const [pedido, setPedido] = useState<PedidoDetail | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [generating, setGenerating] = useState<boolean>(false);
 
   useEffect(() => {
-    if (!id) return;
-    const fetchPedido = async () => {
-      try {
-        // Ajuste a URL da API conforme necessário
-        const response = await fetch(`http://localhost:5000/pedidos/${id}`);
-        const data = await response.json();
-        setPedido(data);
-      } catch (error) {
-        console.error('Erro ao buscar pedido:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
+    if (id) {
+      const fetchPedido = async () => {
+        try {
+          const response = await fetch(`http://localhost:5000/pedidos/${id}`);
+          const contentType = response.headers.get('content-type');
+          const text = await response.text();
 
-    fetchPedido();
+          console.log('Headers da resposta:', contentType);
+          console.log('Resposta bruta:', text);
+
+          if (!response.ok) {
+            throw new Error(`Erro ao buscar pedido: ${response.status}`);
+          }
+
+          if (!contentType || !contentType.includes('application/json')) {
+            throw new Error('A resposta não está no formato JSON.');
+          }
+
+          setPedido(JSON.parse(text));
+        } catch (error) {
+          console.error('Erro ao buscar pedido:', error);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      fetchPedido();
+    }
   }, [id]);
 
   const handleGenerateOrdemServico = async () => {
     if (!pedido) return;
     setGenerating(true);
     try {
-      // Aqui, o payload utiliza a chave "pedido_id" conforme o comando curl informado
       const response = await fetch('http://localhost:5000/ordem-servico', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -136,7 +148,6 @@ const PedidoDetalhesPage = () => {
               <Card.Text>
                 <strong>Status:</strong> {pedido.status}
               </Card.Text>
-              {/* Dados do tipo data foram desconsiderados */}
             </Card.Body>
           </Card>
 

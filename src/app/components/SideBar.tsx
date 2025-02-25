@@ -39,7 +39,7 @@ const SideBar = () => {
                 Pedidos                
               </li>
             </Link>
-            <Link href='../ordemServico'>
+            <Link href='../ordemServicoListPage'>
               <li>
                 Ordens de Serviço
               </li>

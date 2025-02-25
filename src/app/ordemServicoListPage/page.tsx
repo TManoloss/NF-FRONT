@@ -23,7 +23,7 @@ const OrdemServicoListPage = () => {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const response = await fetch('http://localhost:5000/ordens'); // Ajuste a URL da API conforme necessário
+        const response = await fetch('http://localhost:5000/ordem-servico/'); // Ajuste a URL da API conforme necessário
         const data = await response.json();
 
         // Mapeia e formata os dados para a interface ServiceOrder
@@ -32,7 +32,7 @@ const OrdemServicoListPage = () => {
             id: ordem.id,
             descricao: ordem.descricao,
             // Utiliza o número do pedido vindo do objeto pedido ou do parâmetro "numero_pedido"
-            numeroPedido: ordem.pedido?.numero || ordem.numero_pedido || '',
+            numeroPedido: ordem.numero_pedido || '',
             // Acessa o nome do cliente aninhado em pedido.orcamento.cliente
             clientName: ordem.pedido?.orcamento?.cliente?.nome || 'Cliente Desconhecido',
             // Exibe o status vindo de pedido.status, caso esteja disponível
@@ -91,7 +91,7 @@ const OrdemServicoListPage = () => {
                         <td>{order.clientName}</td>
                         <td>{order.status}</td>
                         <td>
-                          <Link href={`/ordemServico/${order.id}`} passHref>
+                          <Link href={`./ordemServico/${order.id}`} passHref>
                             <Button variant="info" size="sm">
                               Ver Detalhes
                             </Button>
