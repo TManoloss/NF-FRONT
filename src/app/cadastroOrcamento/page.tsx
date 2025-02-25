@@ -3,8 +3,9 @@ import { useState, useEffect } from 'react';
 import { Button, InputGroup, FormControl, Modal, Alert } from 'react-bootstrap';
 import Select from 'react-select';
 import { FaTrash, FaCloudUploadAlt } from 'react-icons/fa';
+import SideBar from '../components/SideBar'; // Ajuste conforme seu caminho
 
-const OrcamentoPage = ()=> {
+const OrcamentoPage = () => {
   const [clientes, setClientes] = useState<{ value: string; label: string }[]>([]);
   const [cliente, setCliente] = useState<any>(null);
   const [endereco, setEndereco] = useState('');
@@ -36,6 +37,7 @@ const OrcamentoPage = ()=> {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  // Carrega clientes
   useEffect(() => {
     const fetchClientes = async () => {
       try {
@@ -57,8 +59,15 @@ const OrcamentoPage = ()=> {
     fetchClientes();
   }, []);
 
+  // Salva produto no estado
   const handleSalvarProduto = () => {
-    if (!novoProduto.descricao || !novoProduto.servico || !novoProduto.quantidade || !novoProduto.data_vencimento || !novoProduto.endereco) {
+    if (
+      !novoProduto.descricao ||
+      !novoProduto.servico ||
+      !novoProduto.quantidade ||
+      !novoProduto.data_vencimento ||
+      !novoProduto.endereco
+    ) {
       setError('Por favor, preencha todos os campos obrigatórios.');
       return;
     }
@@ -74,16 +83,27 @@ const OrcamentoPage = ()=> {
       });
     }
     setModalOpen(false);
-    setNovoProduto({ descricao: '', servico: '', quantidade: 0, data_vencimento: '', produto_id: '', endereco: '', imagem: null, status: 'Disponível', categoria: 'Materiais' });
+    setNovoProduto({
+      descricao: '',
+      servico: '',
+      quantidade: 0,
+      data_vencimento: '',
+      produto_id: '',
+      endereco: '',
+      imagem: null,
+      status: 'Disponível',
+      categoria: 'Materiais',
+    });
     setEndereco('');
     setImagePreview(null);
   };
 
+  // Salva endereço no produto
   const handleSalvarEndereco = () => {
     setNovoProduto({ ...novoProduto, endereco });
-    console.log('Endereço salvo:', endereco);
   };
 
+  // Exclui produto da lista
   const handleDeleteProduto = (index: number) => {
     if (cliente) {
       const updatedProdutos = clientesProdutos[cliente.value].filter((_, i) => i !== index);
@@ -94,8 +114,10 @@ const OrcamentoPage = ()=> {
     }
   };
 
+  // Lista de produtos associados ao cliente selecionado
   const produtos = cliente ? clientesProdutos[cliente.value] || [] : [];
 
+  // Upload de imagem
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files ? e.target.files[0] : null;
     if (file) {
@@ -107,6 +129,8 @@ const OrcamentoPage = ()=> {
       reader.readAsDataURL(file);
     }
   };
+
+  // Salva orçamento
   const handleSalvarOrcamento = async () => {
     if (!cliente || produtos.length === 0) {
       setError('Selecione um cliente e adicione pelo menos um produto.');
@@ -115,26 +139,24 @@ const OrcamentoPage = ()=> {
   
     const orcamento = {
       descricao: "Orçamento de reforma",
-      servico: produtos[0].servico, // Pegando o primeiro serviço da lista
+      servico: produtos[0].servico,
       quantidade: produtos.length,
-      data_vencimento: produtos[0].data_vencimento, // Pegando a data do primeiro produto
+      data_vencimento: produtos[0].data_vencimento,
       endereco: endereco,
-      cliente_id: parseInt(cliente.value, 10), // Convertendo para número
+      cliente_id: parseInt(cliente.value, 10),
       produtos: produtos.map(produto => ({
         descricao: produto.descricao,
         servico: produto.servico,
         quantidade: produto.quantidade,
-        categoria: "Material", // Ajustando para o formato do curl
-        status: "Disponível", // Adicionando status conforme esperado pela API
-      }))
+        categoria: "Material",
+        status: "Disponível",
+      })),
     };
   
     try {
       const response = await fetch('http://localhost:5000/orcamentos', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(orcamento),
       });
   
@@ -151,73 +173,112 @@ const OrcamentoPage = ()=> {
       setError('Erro ao salvar orçamento.');
     }
   };
-  
-  
 
   return (
-    <div className="container py-4">
-      <h1 className="mb-4">Cadastro de Orçamento</h1>
+    <div className="page-container">
+      {/* SideBar à esquerda */}
+      <SideBar />
 
-      <div className="mb-4">
-        <label>Cliente</label>
-        
-        <Select
-          value={clientes.find((c) => c.value === cliente?.value) || null}
-          onChange={(selectedOption) => setCliente(selectedOption)}
-          options={clientes}
-          placeholder="Selecione um cliente"
-          isSearchable
-        />
-      </div>
+      {/* Conteúdo principal */}
+      <div className="content-container">
+        <h1 className="mb-4">Cadastro de Orçamento</h1>
 
-      <div className="mb-4">
-        <label>Endereço</label>
-        <InputGroup>
-          <FormControl
-            type="text"
-            placeholder="Endereço"
-            value={endereco}
-            onChange={(e) => setEndereco(e.target.value)}
+        {/* Selecionar Cliente */}
+        <div className="mb-4">
+          <label>Cliente</label>
+          <Select
+            value={clientes.find((c) => c.value === cliente?.value) || null}
+            onChange={(selectedOption) => setCliente(selectedOption)}
+            options={clientes}
+            placeholder="Selecione um cliente"
+            isSearchable
           />
-        </InputGroup>
-        <div className="d-flex justify-content-end mt-2">
-          <Button variant="primary" onClick={handleSalvarEndereco}>
-            Salvar Endereço
+        </div>
+
+        {/* Endereço */}
+        <div className="mb-4">
+          <label>Endereço</label>
+          <InputGroup>
+            <FormControl
+              type="text"
+              placeholder="Endereço"
+              value={endereco}
+              onChange={(e) => setEndereco(e.target.value)}
+            />
+          </InputGroup>
+          <div className="d-flex justify-content-end mt-2">
+            <Button variant="primary" onClick={handleSalvarEndereco}>
+              Salvar Endereço
+            </Button>
+          </div>
+        </div>
+
+        {error && <Alert variant="danger">{error}</Alert>} 
+
+        {/* Lista de Produtos */}
+        <div className="mt-4">
+          <h5>Produtos</h5>
+          <div className="d-flex flex-wrap mb-4">
+            {produtos.map((produto, index) => (
+              <div
+                key={index}
+                className="mb-3 d-flex justify-content-start"
+                style={{ marginRight: '10px' }}
+              >
+                <div
+                  className="border p-2 rounded position-relative"
+                  style={{ width: '160px', height: '160px' }}
+                >
+                  <div>{produto.descricao}</div>
+                  <div>{produto.endereco}</div>
+                  {produto.imagem && (
+                    <img
+                      src={produto.imagem}
+                      alt="Produto"
+                      style={{ width: '60px', height: '60px', marginTop: '5px' }}
+                    />
+                  )}
+                  <div
+                    className="position-absolute"
+                    style={{ bottom: '10px', right: '10px' }}
+                  >
+                    <Button
+                      variant="link"
+                      onClick={() => handleDeleteProduto(index)}
+                      className="text-danger p-0"
+                    >
+                      <FaTrash size={20} />
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Botões de Ação (sem position: fixed) */}
+        <div className="action-buttons d-flex justify-content-between mt-5">
+          <Button variant="success" onClick={handleSalvarOrcamento}>
+            Salvar Orçamento
+          </Button>
+          <Button variant="primary" onClick={() => setModalOpen(true)}>
+            + Adicionar Produto
           </Button>
         </div>
       </div>
 
-      {error && <Alert variant="danger">{error}</Alert>} 
-
-      <div className="mt-4">
-        <h5>Produtos</h5>
-        <div className="d-flex flex-wrap mb-4">
-          {produtos.map((produto, index) => (
-            <div key={index} className="mb-3 d-flex justify-content-start" style={{ marginRight: '10px' }}>
-              <div className="border p-2 rounded position-relative" style={{ width: '160px', height: '160px' }}>
-                <div>{produto.descricao}</div>
-                <div>{produto.endereco}</div>
-                {produto.imagem && (
-                  <img src={produto.imagem} alt="Produto" style={{ width: '60px', height: '60px', marginTop: '5px' }} />
-                )}
-                <div className="position-absolute" style={{ bottom: '10px', right: '10px' }}>
-                  <Button variant="link" onClick={() => handleDeleteProduto(index)} className="text-danger p-0">
-                    <FaTrash size={20} />
-                  </Button>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
+      {/* Modal de Novo Produto */}
       <Modal show={modalOpen} onHide={() => setModalOpen(false)}>
         <Modal.Header closeButton>
           <Modal.Title>Novo Produto</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <div className="mb-3 d-flex align-items-center">
-            <Button variant="light" className="me-3" onClick={() => document.getElementById('upload-input')?.click()}>
+            <Button
+              variant="light"
+              className="me-3"
+              onClick={() => document.getElementById('upload-input')?.click()}
+            >
               <FaCloudUploadAlt size={24} />
             </Button>
             <input
@@ -229,7 +290,11 @@ const OrcamentoPage = ()=> {
             />
             {imagePreview && (
               <div className="mt-2">
-                <img src={imagePreview} alt="Imagem do Produto" style={{ width: '50px', height: '50px' }} />
+                <img
+                  src={imagePreview}
+                  alt="Imagem do Produto"
+                  style={{ width: '50px', height: '50px' }}
+                />
               </div>
             )}
           </div>
@@ -290,19 +355,31 @@ const OrcamentoPage = ()=> {
         </Modal.Footer>
       </Modal>
 
-      <div style={{ position: 'fixed', bottom: '20px', right: '80px' }}>
-        <Button variant="primary" onClick={() => setModalOpen(true)}>
-          + Adicionar Produto
-        </Button>
-      </div>
-      <div style={{ position: 'fixed', bottom: '20px', left: '85px' }}>
-      <Button variant="success" onClick={handleSalvarOrcamento}>
-                  Salvar Orçamento
-        </Button>
-      </div>
+      <style jsx>{`
+        .page-container {
+          display: flex;
+          height: 100vh;
+          background: #f0f0f0;
+        }
+
+        .content-container {
+          flex: 1;
+          overflow-y: auto;
+          padding: 20px;
+        }
+
+        /* Ajuste de altura mínima para não ficar espremido em telas pequenas */
+        .content-container {
+          min-height: 0;
+        }
+
+        .action-buttons {
+          /* Espaço extra para evitar colar nos produtos */
+          margin-bottom: 2rem;
+        }
+      `}</style>
     </div>
   );
 };
-
 
 export default OrcamentoPage;
