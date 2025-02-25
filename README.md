@@ -1,4 +1,5 @@
 # Sistema de Gerenciamento de Orçamentos - Porto-Rico Decorações
+![porto rico logo](/public/portorico.jpeg)
 
 Este sistema foi desenvolvido para gerenciar os orçamentos, pedidos e ordens de serviço da empresa Porto-Rico Decorações. Ele abrange desde o cadastro inicial de funcionários, clientes, fornecedores e materiais até a execução das ordens de serviço. A seguir, são descritas as principais funcionalidades do sistema e como utilizá-lo.
 
