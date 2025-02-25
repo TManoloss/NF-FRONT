@@ -24,7 +24,7 @@ const LoginPage = () => {
     const data = await res.json();
   
     if (res.ok) {
-      router.push('/dashboard');
+      router.push('/homePage'); // Redireciona para a página homePage
     } else {
       alert(data.message || 'Credenciais inválidas!');
     }

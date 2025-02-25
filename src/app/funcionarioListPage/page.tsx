@@ -24,7 +24,7 @@ const FuncionariosListPage = () => {
   useEffect(() => {
     const fetchFuncionarios = async () => {
       try {
-        const response = await fetch('http://localhost:5000/funcionarios');
+        const response = await fetch('http://localhost:5000/api/funcionarios');
         const data = await response.json();
         setFuncionarios(data);
       } catch (error) {

@@ -18,9 +18,12 @@ const HomePage: React.FC<HomePageProps> = ({ userName, onLogout }) => {
           <div className="user-info">
             <span className="user-name">{userName}</span>
           </div>
-          <button className="logout-button" onClick={onLogout}>
+          {/* <button className="logout-button" onClick={() => {
+            onLogout();
+            window.location.href = '/login';
+          }}>
             Logout
-          </button>
+          </button> */}
         </header>
 
         <main className="main-section">

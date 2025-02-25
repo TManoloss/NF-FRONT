@@ -14,6 +14,11 @@ const SideBar = () => {
         </Link>
         <nav className="sidebar-nav">
           <ul>
+            <Link href='../homePage'>
+            <li>
+              Home
+            </li>
+            </Link>
             <Link href='../fornecedorListPage'>
               <li>
                 Fornecedores
