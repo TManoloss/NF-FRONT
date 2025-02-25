@@ -1,11 +1,4 @@
 
-.container {
-    display: flex;
-    min-height: 100vh; /* Faz a página ocupar toda a altura da tela */
-    font-family: sans-serif;
-  }
-
-  
   /* Área principal (coluna direita) */
   .main-content {
     flex: 1;

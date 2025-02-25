@@ -11,7 +11,7 @@ interface HomePageProps {
 
 const HomePage: React.FC<HomePageProps> = ({ userName, onLogout }) => {
   return (
-    <div className="container">
+    <div className="d-flex">
       <SideBar />
 
       <div className="main-content">
