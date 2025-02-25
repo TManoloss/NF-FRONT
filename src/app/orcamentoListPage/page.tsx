@@ -14,7 +14,7 @@ interface Budget {
   descricao: string;
 }
 
-const ITEMS_PER_PAGE = 8; // Número de orçamentos por página
+const ITEMS_PER_PAGE = 8; 
 
 const OrcamentoListPage = () => {
   const [budgets, setBudgets] = useState<Budget[]>([]);
