@@ -13,9 +13,25 @@ const CadastrarMateriais = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log('Dados enviados:', formData);
+    const response = await fetch('http://localhost:5000/materiais', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        descricao: formData.descricao,
+        produto: Number(formData.produto_destino),
+        fornecedorId: Number(formData.fornecedor_id),
+      }),
+    });
+    
+    if (response.ok) {
+      console.log('Dados enviados com sucesso');
+    } else {
+      console.error('Erro ao enviar dados');
+    }
   };
 
   return (
