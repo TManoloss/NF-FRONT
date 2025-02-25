@@ -65,6 +65,29 @@ const OrcamentoDetailPage = () => {
     fetchBudgetDetail();
   }, [id]);
 
+  // Função para gerar o pedido a partir do orçamento
+  const handleGenerateOrder = async () => {
+    if (!budget) return;
+
+    try {
+      const response = await fetch('http://localhost:5000/pedido', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ orcamento_id: budget.id }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Erro ao gerar o pedido.');
+      }
+
+      // Aqui você pode implementar uma lógica adicional (ex: redirecionar, exibir mensagem de sucesso, etc.)
+      alert('Pedido gerado com sucesso!');
+    } catch (error: any) {
+      console.error('Erro ao gerar o pedido:', error);
+      alert('Erro ao gerar o pedido.');
+    }
+  };
+
   if (loading) {
     return (
       <div className="d-flex justify-content-center align-items-center vh-100">
@@ -164,9 +187,15 @@ const OrcamentoDetailPage = () => {
             </Card.Body>
           </Card>
 
-          <Link href="/orcamentos">
-            <Button variant="secondary">Voltar</Button>
-          </Link>
+          {/* Botão para gerar o pedido */}
+          <div className="d-flex gap-2 mb-4">
+            <Button variant="primary" onClick={handleGenerateOrder}>
+              Gerar Pedido
+            </Button>
+            <Link href="/orcamentos">
+              <Button variant="secondary">Voltar</Button>
+            </Link>
+          </div>
         </Container>
       </main>
     </div>
