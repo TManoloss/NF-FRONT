@@ -13,7 +13,6 @@ const HomePage: React.FC<HomePageProps> = ({ userName, onLogout }) => {
   return (
     <div className="d-flex">
       <SideBar />
-
       <div className="main-content">
         <header className="header">
           <div className="user-info">
@@ -53,12 +52,6 @@ const HomePage: React.FC<HomePageProps> = ({ userName, onLogout }) => {
               </button>
               <button onClick={() => window.location.href = '/cadastroOrcamento'}>
                 Orçamentos
-              </button>
-              <button onClick={() => window.location.href = '/cadastroPedidos'}>
-                Pedidos
-              </button>
-              <button onClick={() => window.location.href = '/cadastroOrdensDeServico'}>
-                Ordens de Serviço
               </button>
             </div>
           </div>
