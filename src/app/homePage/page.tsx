@@ -53,6 +53,9 @@ const HomePage: React.FC<HomePageProps> = ({ userName, onLogout }) => {
               <button onClick={() => window.location.href = '/cadastroOrcamento'}>
                 Orçamentos
               </button>
+              <button onClick={() => window.location.href = '/cadastroMateriais'}>
+                Materiais
+              </button>
             </div>
           </div>
         </main>
